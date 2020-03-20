@@ -14,6 +14,9 @@ namespace ExcelMerge.GUI.ViewModels
     public class DiffViewModel : BindableBase
     {
         private bool showLocationGridLine;
+        public ExcelWorkbook srcWB { get; private set; } = new ExcelWorkbook();
+        public ExcelWorkbook dstWB { get; private set; } = new ExcelWorkbook();
+       
         public bool ShowLocationGridLine
         {
             get { return showLocationGridLine; }
@@ -215,7 +218,8 @@ namespace ExcelMerge.GUI.ViewModels
 
             if (existsSrc)
             {
-                SrcSheetNames = ExcelWorkbook.GetSheetNames(SrcPath).ToList();
+                srcWB = ExcelWorkbook.Create(SrcPath, new ExcelSheetReadConfig());
+                SrcSheetNames = ExcelWorkbook.GetSheetNames(srcWB).ToList();
                 SelectedSrcSheetIndex = 0;
             }
             else
@@ -226,7 +230,8 @@ namespace ExcelMerge.GUI.ViewModels
 
             if (existsDst)
             {
-                DstSheetNames = ExcelWorkbook.GetSheetNames(DstPath).ToList();
+                dstWB = ExcelWorkbook.Create(dstPath, new ExcelSheetReadConfig());
+                DstSheetNames = ExcelWorkbook.GetSheetNames(dstWB).ToList();
                 SelectedDstSheetIndex = 0;
             }
             else

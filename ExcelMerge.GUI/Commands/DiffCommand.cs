@@ -26,6 +26,7 @@ namespace ExcelMerge.GUI.Commands
             var windowViewModel = new MainWindowViewModel(diffView);
             var diffViewModel = new DiffViewModel(Option.SrcPath, Option.DstPath, windowViewModel);
             window.DataContext = windowViewModel;
+            diffView._diffViewModel = diffViewModel;
             diffView.DataContext = diffViewModel;
 
             App.Current.MainWindow = window;

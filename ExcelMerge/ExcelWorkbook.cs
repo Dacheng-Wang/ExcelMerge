@@ -32,21 +32,11 @@ namespace ExcelMerge
             return wb;
         }
 
-        public static IEnumerable<string> GetSheetNames(string path)
+        public static IEnumerable<string> GetSheetNames(ExcelWorkbook wb)
         {
-            if (Path.GetExtension(path) == ".csv")
+            foreach (KeyValuePair<string,ExcelSheet> pair in wb.Sheets)
             {
-                yield return System.IO.Path.GetFileName(path);
-            }
-            else if (Path.GetExtension(path) == ".tsv")
-            {
-                yield return System.IO.Path.GetFileName(path);
-            }
-            else
-            {
-                var wb = WorkbookFactory.Create(path);
-                for (int i = 0; i < wb.NumberOfSheets; i++)
-                    yield return wb.GetSheetAt(i).SheetName;
+                yield return pair.Key;
             }
         }
 

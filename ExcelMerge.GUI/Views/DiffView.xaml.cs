@@ -22,6 +22,7 @@ namespace ExcelMerge.GUI.Views
 {
     public partial class DiffView : UserControl
     {
+        public DiffViewModel _diffViewModel { get; set; }
         private ExcelSheetDiffConfig diffConfig = new ExcelSheetDiffConfig();
         private IUnityContainer container;
         private const string srcKey = "src";
@@ -88,7 +89,7 @@ namespace ExcelMerge.GUI.Views
             var args = new DiffViewEventArgs<FastGridControl>(null, container, TargetType.First);
             DataGridEventDispatcher.Instance.DispatchParentLoadEvent(args);
 
-            ExecuteDiff(isStartup: true);
+                ExecuteDiff(isStartup: true);
 
             // In order to enable Ctrl + F immediately after startup.
             ToolExpander.IsExpanded = false;
@@ -360,7 +361,7 @@ namespace ExcelMerge.GUI.Views
             ExecuteDiff();
         }
 
-        private ExcelSheetReadConfig CreateReadConfig()
+        public ExcelSheetReadConfig CreateReadConfig()
         {
             var setting = ((App)Application.Current).Setting;
 
@@ -384,8 +385,8 @@ namespace ExcelMerge.GUI.Views
                 progress.Report(Properties.Resources.Msg_ReadingFiles);
 
                 var config = CreateReadConfig();
-                swb = ExcelWorkbook.Create(srcPath, config);
-                dwb = ExcelWorkbook.Create(dstPath, config);
+                swb = _diffViewModel.srcWB;
+                dwb = _diffViewModel.dstWB;
             });
 
             return Tuple.Create(swb, dwb);
