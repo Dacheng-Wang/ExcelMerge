@@ -8,6 +8,7 @@ using Prism.Mvvm;
 using FastWpfGrid;
 using ExcelMerge.GUI.Settings;
 using ExcelMerge.GUI.Behaviors;
+using ExcelMerge.GUI.Views;
 
 namespace ExcelMerge.GUI.ViewModels
 {
@@ -218,9 +219,13 @@ namespace ExcelMerge.GUI.ViewModels
 
             if (existsSrc)
             {
-                srcWB = ExcelWorkbook.Create(SrcPath, new ExcelSheetReadConfig());
-                SrcSheetNames = ExcelWorkbook.GetSheetNames(srcWB).ToList();
-                SelectedSrcSheetIndex = 0;
+                ProgressWindow.DoWorkWithModal(progress =>
+                {
+                    progress.Report(Properties.Resources.Msg_ReadingFiles);
+                    srcWB = ExcelWorkbook.Create(SrcPath, new ExcelSheetReadConfig());
+                    SrcSheetNames = ExcelWorkbook.GetSheetNames(srcWB).ToList();
+                    SelectedSrcSheetIndex = 0;
+                });
             }
             else
             {
@@ -230,16 +235,19 @@ namespace ExcelMerge.GUI.ViewModels
 
             if (existsDst)
             {
-                dstWB = ExcelWorkbook.Create(dstPath, new ExcelSheetReadConfig());
-                DstSheetNames = ExcelWorkbook.GetSheetNames(dstWB).ToList();
-                SelectedDstSheetIndex = 0;
+                ProgressWindow.DoWorkWithModal(progress =>
+                {
+                    progress.Report(Properties.Resources.Msg_ReadingFiles);
+                    dstWB = ExcelWorkbook.Create(dstPath, new ExcelSheetReadConfig());
+                    DstSheetNames = ExcelWorkbook.GetSheetNames(dstWB).ToList();
+                    SelectedDstSheetIndex = 0;
+                });
             }
             else
             {
                 DstSheetNames = new List<string>();
                 SelectedDstSheetIndex = -1;
             }
-
             Executable = existsSrc && existsDst;
         }
     }

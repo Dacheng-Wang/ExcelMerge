@@ -380,14 +380,9 @@ namespace ExcelMerge.GUI.Views
             ExcelWorkbook dwb = null;
             var srcPath = SrcPathTextBox.Text;
             var dstPath = DstPathTextBox.Text;
-            ProgressWindow.DoWorkWithModal(progress =>
-            {
-                progress.Report(Properties.Resources.Msg_ReadingFiles);
-
-                var config = CreateReadConfig();
-                swb = _diffViewModel.srcWB;
-                dwb = _diffViewModel.dstWB;
-            });
+            var config = CreateReadConfig();
+            swb = _diffViewModel.srcWB;
+            dwb = _diffViewModel.dstWB;
 
             return Tuple.Create(swb, dwb);
         }
@@ -422,11 +417,11 @@ namespace ExcelMerge.GUI.Views
         private ExcelSheetDiff ExecuteDiff(ExcelSheet srcSheet, ExcelSheet dstSheet)
         {
             ExcelSheetDiff diff = null;
-            ProgressWindow.DoWorkWithModal(progress =>
-            {
-                progress.Report(Properties.Resources.Msg_ExtractingDiff);
+            //ProgressWindow.DoWorkWithModal(progress =>
+            //{
+            //    progress.Report(Properties.Resources.Msg_ExtractingDiff);
                 diff = ExcelSheet.Diff(srcSheet, dstSheet, diffConfig);
-            });
+            //});
 
             return diff;
         }
