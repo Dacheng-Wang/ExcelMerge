@@ -195,7 +195,7 @@ namespace ExcelMerge.GUI.Views
         {
             foreach (var grid in e.Container.ResolveAll<FastGridControl>())
             {
-                (grid.Model as DiffGridModel).SetColumnHeader(0);
+                (grid.Model as DiffGridModel).SetColumnHeader(-1);
                 grid.NotifyRefresh();
             }
         }
