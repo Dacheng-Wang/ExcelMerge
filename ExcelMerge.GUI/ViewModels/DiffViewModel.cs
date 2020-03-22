@@ -11,7 +11,7 @@ using System.Windows;
 
 namespace ExcelMerge.GUI.ViewModels
 {
-    internal class DiffViewModel : BindableBase
+    public class DiffViewModel : BindableBase
     {
         public ExcelWorkbook SrcWb { get; private set; }
         public ExcelWorkbook DstWb { get; private set; }

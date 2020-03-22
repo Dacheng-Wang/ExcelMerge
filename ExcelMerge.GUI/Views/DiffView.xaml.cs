@@ -23,12 +23,12 @@ namespace ExcelMerge.GUI.Views
 {
     public partial class DiffView : UserControl
     {
+        public DiffViewModel _diffViewModel { get; set; }
         private ExcelSheetDiffConfig diffConfig = new ExcelSheetDiffConfig();
         private IUnityContainer container;
         private const string srcKey = "src";
         private const string dstKey = "dst";
         private bool isLock = false;
-        private DiffViewModel _diffViewModel = new DiffViewModel();
         private FastGridControl copyTargetGrid;
 
         public DiffView()
