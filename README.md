@@ -1,3 +1,9 @@
+List of improvements from original version:
+- Files only get loaded once at the beginning of the process. This makes navigation faster when handling large Excel files.
+- Smarter end-of-sheet detection which ignores non-blank cells at the end of sheets.
+- The tool no longer skips blank rows & columns at the start of the sheets. This is to present identical cell address of original Excel file.
+- DataGrid default column header is now letters to help users quickly identify cell address of any difference.  
+-----------------------------------------Below is from original Readme of skanmera-----------------------------------------
 - [English](https://github.com/skanmera/ExcelMerge/blob/master/README.md)
 - [日本語](https://github.com/skanmera/ExcelMerge/blob/master/README.jp.md)
 
