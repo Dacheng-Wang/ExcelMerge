@@ -29,7 +29,7 @@ It can also be used as a diff tool for Git or Mercurial.
 
 ## Installation
 
-Download ExcelMergeSetup.msi from [here](https://github.com/skanmera/ExcelMerge/releases/) and Run.
+Download ExcelMergeSetup.msi from [here](https://github.com/Dacheng-Wang/ExcelMerge/releases) and Run.
 
 ## Usage
 
