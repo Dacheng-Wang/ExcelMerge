@@ -1,4 +1,5 @@
 ﻿using ExcelMerge.GUI.Behaviors;
+using ExcelMerge.GUI.Views;
 using Prism.Mvvm;
 using SKCore.Collection;
 using SKCore.IO;
@@ -11,7 +12,7 @@ using System.Windows;
 
 namespace ExcelMerge.GUI.ViewModels
 {
-    public class DiffViewModel : BindableBase
+    internal class DiffViewModel : BindableBase
     {
         public ExcelWorkbook SrcWb { get; private set; }
         public ExcelWorkbook DstWb { get; private set; }
@@ -30,6 +31,25 @@ namespace ExcelMerge.GUI.ViewModels
             {
                 SetProperty(ref srcPath, value);
                 Settings.EMEnvironmentValue.Set("SRC", value);
+                if (File.Exists(SrcPath))
+                {
+                    var tmp = Path.ChangeExtension(App.GetTempFileName(), Path.GetExtension(SrcPath));
+                    PathUtility.CopyTree(SrcPath, tmp, overwrite: true);
+                    File.SetAttributes(tmp, FileAttributes.Normal);
+                    var config = CreateReadConfig();
+                    ProgressWindow.DoWorkWithModal(progress =>
+                    {
+                        progress.Report(Properties.Resources.Msg_ReadingFiles);
+                        SrcWb = ExcelWorkbook.Create(tmp, config);
+                    });
+                    originalSrcSheetNames = ExcelWorkbook.GetSheetNames(SrcWb).ToList();
+                    SelectedSrcSheetIndex = 0;
+                }
+                else
+                {
+                    originalSrcSheetNames = new List<string>();
+                    SelectedSrcSheetIndex = -1;
+                }
                 UpdateExecutableFlag();
             }
         }
@@ -42,6 +62,25 @@ namespace ExcelMerge.GUI.ViewModels
             {
                 SetProperty(ref dstPath, value);
                 Settings.EMEnvironmentValue.Set("DST", value);
+                if (File.Exists(DstPath))
+                {
+                    var tmp = Path.ChangeExtension(App.GetTempFileName(), Path.GetExtension(DstPath));
+                    PathUtility.CopyTree(DstPath, tmp, overwrite: true);
+                    File.SetAttributes(tmp, FileAttributes.Normal);
+                    var config = CreateReadConfig();
+                    ProgressWindow.DoWorkWithModal(progress =>
+                    {
+                        progress.Report(Properties.Resources.Msg_ReadingFiles);
+                        DstWb = ExcelWorkbook.Create(tmp, config);
+                    });
+                    originalDstSheetNames = ExcelWorkbook.GetSheetNames(DstWb).ToList();
+                    SelectedDstSheetIndex = 0;
+                }
+                else
+                {
+                    originalDstSheetNames = new List<string>();
+                    SelectedDstSheetIndex = -1;
+                }
                 UpdateExecutableFlag();
             }
         }
@@ -266,38 +305,6 @@ namespace ExcelMerge.GUI.ViewModels
         {
             var existsSrc = File.Exists(SrcPath);
             var existsDst = File.Exists(DstPath);
-
-            if (existsSrc)
-            {
-                var tmp = Path.ChangeExtension(App.GetTempFileName(), Path.GetExtension(SrcPath));
-                PathUtility.CopyTree(SrcPath, tmp, overwrite: true);
-                File.SetAttributes(tmp, FileAttributes.Normal);
-                var config = CreateReadConfig();
-                SrcWb = ExcelWorkbook.Create(tmp, config);
-                originalSrcSheetNames = ExcelWorkbook.GetSheetNames(SrcWb).ToList();
-                SelectedSrcSheetIndex = 0;
-            }
-            else
-            {
-                originalSrcSheetNames = new List<string>();
-                SelectedSrcSheetIndex = -1;
-            }
-
-            if (existsDst)
-            {
-                var tmp = Path.ChangeExtension(App.GetTempFileName(), Path.GetExtension(DstPath));
-                PathUtility.CopyTree(DstPath, tmp, overwrite: true);
-                File.SetAttributes(tmp, FileAttributes.Normal);
-                var config = CreateReadConfig();
-                DstWb = ExcelWorkbook.Create(tmp, config);
-                originalDstSheetNames = ExcelWorkbook.GetSheetNames(DstWb).ToList();
-                SelectedDstSheetIndex = 0;
-            }
-            else
-            {
-                originalDstSheetNames = new List<string>();
-                SelectedDstSheetIndex = -1;
-            }
 
             SrcSheetNames = new List<string>();
             DstSheetNames = new List<string>();

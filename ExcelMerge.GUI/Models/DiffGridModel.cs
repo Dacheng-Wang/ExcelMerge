@@ -52,7 +52,7 @@ namespace ExcelMerge.GUI.Models
             get { return TooltipVisibilityMode.OnlyWhenTrimmed; }
         }
 
-        public int ColumnHeaderIndex { get; private set; }
+        public int ColumnHeaderIndex { get; private set; } = -1;
         public int RowHeaderIndex { get; private set; } = -1;
         public DiffType DiffType { get; private set; }
         public ExcelSheetDiff SheetDiff { get; private set; }
@@ -70,6 +70,9 @@ namespace ExcelMerge.GUI.Models
 
         public override string GetColumnHeaderText(int column)
         {
+            if (ColumnHeaderIndex < 0)
+                return base.GetColumnHeaderText(column);
+
             ExcelCellDiff cellDiff;
             if (TryGetCellDiff(ColumnHeaderIndex, column, out cellDiff))
                 return GetCellText(cellDiff);

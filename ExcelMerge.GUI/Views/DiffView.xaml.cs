@@ -23,7 +23,7 @@ namespace ExcelMerge.GUI.Views
 {
     public partial class DiffView : UserControl
     {
-        public DiffViewModel _diffViewModel { get; set; }
+        internal DiffViewModel _diffViewModel { get; set; }
         private ExcelSheetDiffConfig diffConfig = new ExcelSheetDiffConfig();
         private IUnityContainer container;
         private const string srcKey = "src";
@@ -413,19 +413,6 @@ namespace ExcelMerge.GUI.Views
             ExecuteDiff();
         }
 
-        private ExcelSheetReadConfig CreateReadConfig()
-        {
-            var setting = ((App)Application.Current).Setting;
-
-            return new ExcelSheetReadConfig()
-            {
-                TrimFirstBlankRows = setting.SkipFirstBlankRows,
-                TrimFirstBlankColumns = setting.SkipFirstBlankColumns,
-                TrimLastBlankRows = setting.TrimLastBlankRows,
-                TrimLastBlankColumns = setting.TrimLastBlankColumns,
-            };
-        }
-
         private Tuple<ExcelWorkbook, ExcelWorkbook> ReadWorkbooks()
         {
             var srcPath = Path.ChangeExtension(App.GetTempFileName(), Path.GetExtension(SrcPathTextBox.Text));
@@ -444,15 +431,8 @@ namespace ExcelMerge.GUI.Views
 
             PathUtility.CopyTree(DstPathTextBox.Text, dstPath, overwrite: true);
             File.SetAttributes(dstPath, FileAttributes.Normal);
-
-            ProgressWindow.DoWorkWithModal(progress =>
-            {
-                progress.Report(Properties.Resources.Msg_ReadingFiles);
-
-                var config = CreateReadConfig();
-                swb = ExcelWorkbook.Create(srcPath, config);
-                dwb = ExcelWorkbook.Create(dstPath, config);
-            });
+            swb = _diffViewModel.SrcWb;
+            dwb = _diffViewModel.DstWb;
 
             return Tuple.Create(swb, dwb);
         }
