@@ -32,6 +32,21 @@ namespace ExcelMerge.GUI.ViewModels
             {
                 SetProperty(ref srcPath, value);
                 Settings.EMEnvironmentValue.Set("SRC", value);
+                if (File.Exists(SrcPath))
+                {
+                    ProgressWindow.DoWorkWithModal(progress =>
+                    {
+                        progress.Report(Properties.Resources.Msg_ReadingFiles);
+                        srcWB = ExcelWorkbook.Create(SrcPath, new ExcelSheetReadConfig());
+                        SrcSheetNames = ExcelWorkbook.GetSheetNames(srcWB).ToList();
+                        SelectedSrcSheetIndex = 0;
+                    });
+                }
+                else
+                {
+                    SrcSheetNames = new List<string>();
+                    SelectedSrcSheetIndex = -1;
+                }
                 UpdateExecutableFlag();
             }
         }
@@ -44,6 +59,21 @@ namespace ExcelMerge.GUI.ViewModels
             {
                 SetProperty(ref dstPath, value);
                 Settings.EMEnvironmentValue.Set("DST", value);
+                if (File.Exists(SrcPath))
+                {
+                    ProgressWindow.DoWorkWithModal(progress =>
+                    {
+                        progress.Report(Properties.Resources.Msg_ReadingFiles);
+                        dstWB = ExcelWorkbook.Create(dstPath, new ExcelSheetReadConfig());
+                        DstSheetNames = ExcelWorkbook.GetSheetNames(dstWB).ToList();
+                        SelectedDstSheetIndex = 0;
+                    });
+                }
+                else
+                {
+                    DstSheetNames = new List<string>();
+                    SelectedDstSheetIndex = -1;
+                }
                 UpdateExecutableFlag();
             }
         }
@@ -216,38 +246,6 @@ namespace ExcelMerge.GUI.ViewModels
         {
             var existsSrc = File.Exists(SrcPath);
             var existsDst = File.Exists(DstPath);
-
-            if (existsSrc)
-            {
-                ProgressWindow.DoWorkWithModal(progress =>
-                {
-                    progress.Report(Properties.Resources.Msg_ReadingFiles);
-                    srcWB = ExcelWorkbook.Create(SrcPath, new ExcelSheetReadConfig());
-                    SrcSheetNames = ExcelWorkbook.GetSheetNames(srcWB).ToList();
-                    SelectedSrcSheetIndex = 0;
-                });
-            }
-            else
-            {
-                SrcSheetNames = new List<string>();
-                SelectedSrcSheetIndex = -1;
-            }
-
-            if (existsDst)
-            {
-                ProgressWindow.DoWorkWithModal(progress =>
-                {
-                    progress.Report(Properties.Resources.Msg_ReadingFiles);
-                    dstWB = ExcelWorkbook.Create(dstPath, new ExcelSheetReadConfig());
-                    DstSheetNames = ExcelWorkbook.GetSheetNames(dstWB).ToList();
-                    SelectedDstSheetIndex = 0;
-                });
-            }
-            else
-            {
-                DstSheetNames = new List<string>();
-                SelectedDstSheetIndex = -1;
-            }
             Executable = existsSrc && existsDst;
         }
     }

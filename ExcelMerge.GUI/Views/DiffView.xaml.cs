@@ -417,12 +417,7 @@ namespace ExcelMerge.GUI.Views
         private ExcelSheetDiff ExecuteDiff(ExcelSheet srcSheet, ExcelSheet dstSheet)
         {
             ExcelSheetDiff diff = null;
-            //ProgressWindow.DoWorkWithModal(progress =>
-            //{
-            //    progress.Report(Properties.Resources.Msg_ExtractingDiff);
-                diff = ExcelSheet.Diff(srcSheet, dstSheet, diffConfig);
-            //});
-
+            diff = ExcelSheet.Diff(srcSheet, dstSheet, diffConfig);
             return diff;
         }
 
@@ -451,7 +446,13 @@ namespace ExcelMerge.GUI.Views
             if (srcSheet.Rows.Count > 10000 || dstSheet.Rows.Count > 10000)
                 MessageBox.Show(Properties.Resources.Msg_WarnSize);
 
-            var diff = ExecuteDiff(srcSheet, dstSheet);
+            ExcelSheetDiff diff = new ExcelSheetDiff();
+            ProgressWindow.DoWorkWithModal(progress =>
+            {
+                progress.Report(Properties.Resources.Msg_ExtractingDiff);
+                diff = ExecuteDiff(srcSheet, dstSheet);
+            });
+
             SrcDataGrid.Model = new DiffGridModel(diff, DiffType.Source);
             DstDataGrid.Model = new DiffGridModel(diff, DiffType.Dest);
 
@@ -466,7 +467,7 @@ namespace ExcelMerge.GUI.Views
             DataGridEventDispatcher.Instance.DispatchPostExecuteDiffEvent(args);
 
             var summary = diff.CreateSummary();
-            GetViewModel().UpdateDiffSummary(summary);
+                GetViewModel().UpdateDiffSummary(summary);
 
             if (!App.Instance.KeepFileHistory)
                 App.Instance.UpdateRecentFiles(SrcPathTextBox.Text, DstPathTextBox.Text);
