@@ -7,7 +7,7 @@ namespace ExcelMerge
     public class ExcelWorkbook
     {
         public Dictionary<string, ExcelSheet> Sheets { get; private set; }
-
+        public string WorkbookPath { get; private set; }
         public ExcelWorkbook()
         {
             Sheets = new Dictionary<string, ExcelSheet>();
@@ -28,25 +28,26 @@ namespace ExcelMerge
                 var srcSheet = srcWb.GetSheetAt(i);
                 wb.Sheets.Add(srcSheet.SheetName, ExcelSheet.Create(srcSheet, config));
             }
-
+            wb.WorkbookPath = path;
             return wb;
         }
 
-        public static IEnumerable<string> GetSheetNames(string path)
+        public static IEnumerable<string> GetSheetNames(ExcelWorkbook wb)
         {
-            if (Path.GetExtension(path) == ".csv")
+            if (Path.GetExtension(wb.WorkbookPath) == ".csv")
             {
                 yield return "csv";
             }
-            else if (Path.GetExtension(path) == ".tsv")
+            else if (Path.GetExtension(wb.WorkbookPath) == ".tsv")
             {
                 yield return "tsv";
             }
             else
             {
-                var wb = WorkbookFactory.Create(path);
-                for (int i = 0; i < wb.NumberOfSheets; i++)
-                    yield return wb.GetSheetAt(i).SheetName;
+                foreach (KeyValuePair<string, ExcelSheet> pair in wb.Sheets)
+                {
+                    yield return pair.Key;
+                }
             }
         }
 

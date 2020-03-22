@@ -28,7 +28,7 @@ namespace ExcelMerge.GUI.Views
         private const string srcKey = "src";
         private const string dstKey = "dst";
         private bool isLock = false;
-
+        private DiffViewModel _diffViewModel = new DiffViewModel();
         private FastGridControl copyTargetGrid;
 
         public DiffView()

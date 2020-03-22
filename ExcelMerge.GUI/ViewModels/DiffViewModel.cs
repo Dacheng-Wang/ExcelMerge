@@ -13,6 +13,8 @@ namespace ExcelMerge.GUI.ViewModels
 {
     internal class DiffViewModel : BindableBase
     {
+        public ExcelWorkbook SrcWb { get; private set; }
+        public ExcelWorkbook DstWb { get; private set; }
         private bool showLocationGridLine;
         public bool ShowLocationGridLine
         {
@@ -160,6 +162,9 @@ namespace ExcelMerge.GUI.ViewModels
 
             SrcPath = string.Empty;
             DstPath = string.Empty;
+
+            SrcWb = new ExcelWorkbook();
+            DstWb = new ExcelWorkbook();
         }
 
         public DiffViewModel(string src, string dst, MainWindowViewModel mwv) : this()
@@ -245,7 +250,18 @@ namespace ExcelMerge.GUI.ViewModels
 
             e.Handled = true;
         }
+        private ExcelSheetReadConfig CreateReadConfig()
+        {
+            var setting = ((App)Application.Current).Setting;
 
+            return new ExcelSheetReadConfig()
+            {
+                TrimFirstBlankRows = setting.SkipFirstBlankRows,
+                TrimFirstBlankColumns = setting.SkipFirstBlankColumns,
+                TrimLastBlankRows = setting.TrimLastBlankRows,
+                TrimLastBlankColumns = setting.TrimLastBlankColumns,
+            };
+        }
         private void UpdateExecutableFlag()
         {
             var existsSrc = File.Exists(SrcPath);
@@ -256,7 +272,9 @@ namespace ExcelMerge.GUI.ViewModels
                 var tmp = Path.ChangeExtension(App.GetTempFileName(), Path.GetExtension(SrcPath));
                 PathUtility.CopyTree(SrcPath, tmp, overwrite: true);
                 File.SetAttributes(tmp, FileAttributes.Normal);
-                originalSrcSheetNames = ExcelWorkbook.GetSheetNames(tmp).ToList();
+                var config = CreateReadConfig();
+                SrcWb = ExcelWorkbook.Create(tmp, config);
+                originalSrcSheetNames = ExcelWorkbook.GetSheetNames(SrcWb).ToList();
                 SelectedSrcSheetIndex = 0;
             }
             else
@@ -270,7 +288,9 @@ namespace ExcelMerge.GUI.ViewModels
                 var tmp = Path.ChangeExtension(App.GetTempFileName(), Path.GetExtension(DstPath));
                 PathUtility.CopyTree(DstPath, tmp, overwrite: true);
                 File.SetAttributes(tmp, FileAttributes.Normal);
-                originalDstSheetNames = ExcelWorkbook.GetSheetNames(tmp).ToList();
+                var config = CreateReadConfig();
+                DstWb = ExcelWorkbook.Create(tmp, config);
+                originalDstSheetNames = ExcelWorkbook.GetSheetNames(DstWb).ToList();
                 SelectedDstSheetIndex = 0;
             }
             else
